@@ -18,8 +18,8 @@ namespace {
     double r;     // responsibility r(src, dst)
     double a;     // availability a(src, dst)
 
-    Edge(int src, int dst, double s, double r, double a)
-      : src(src), dst(dst), s(s), r(r), a(a) {}
+    Edge(int src, int dst, double s): src(src), dst(dst), s(s), r(0), a(0) {}
+    bool operator<(const Edge& rhs) const { return s < rhs.s; }
   };
 
   typedef vector<Edge*> Edges;
@@ -28,6 +28,7 @@ namespace {
     int n;                // the number of vertices
     Edges* outEdges;      // array of out edges of corresponding vertices
     Edges* inEdges;       // array of in edges of corresponding vertices
+    vector<Edge> edges;   // all edges
   };
 
   // Build graph from sparse similarity matrix stored in COO format.
@@ -49,57 +50,52 @@ namespace {
     fscanf(input, "%d", &graph->n);
     graph->outEdges = new Edges[graph->n];
     graph->inEdges = new Edges[graph->n];
+    vector<Edge>& edges = graph->edges;
 
     // read similarity matrix
     int i, j;
     double s;
-    vector<double> ss;
     while (fscanf(input, "%d%d%lf", &i, &j, &s) != EOF) {
       if (i == j) { continue; }
-      // add small noise to avoid degeneracies
-      s += (1e-16 * s + 1e-300) * (rand() / (RAND_MAX + 1.0));
-      // make new edge
-      Edge* e = new Edge(i, j, s, 0, 0);
-      graph->outEdges[i].push_back(e);
-      graph->inEdges[j].push_back(e);
-      // store similarities for preference calculation
-      ss.push_back(s);
+      edges.push_back(Edge(i, j, s));
     }
 
     // calculate preferences
     double pref;
     if (prefType == 1) {
-      sort(ss.begin(), ss.end());
-      int m = ss.size();
-      pref = (m % 2) ? ss[m/2] : (ss[m/2 - 1] + ss[m/2]) / 2.0;
+      sort(edges.begin(), edges.end());
+      int m = edges.size();
+      pref = (m % 2) ? edges[m/2].s : (edges[m/2 - 1].s + edges[m/2].s) / 2.0;
     } else if (prefType == 2) {
-      pref = *min_element(ss.begin(), ss.end());
+      pref = min_element(edges.begin(), edges.end())->s;
     } else if (prefType == 3) {
-      double minValue = *min_element(ss.begin(), ss.end());
-      double maxValue = *max_element(ss.begin(), ss.end());
+      double minValue = min_element(edges.begin(), edges.end())->s;
+      double maxValue = max_element(edges.begin(), edges.end())->s;
       pref = 2*minValue - maxValue;
     } else {
       assert(false);      // invalid prefType
     }
     for (int i = 0; i < graph->n; ++i) {
-      Edge* e = new Edge(i, i, pref, 0, 0);
-      graph->outEdges[i].push_back(e);
-      graph->inEdges[i].push_back(e);
+      edges.push_back(Edge(i, i, pref));
+    }
+
+    for (size_t i = 0; i < edges.size(); ++i) {
+      Edge* p = &edges[i];
+      // add small noise to avoid degeneracies
+      p->s += (1e-16 * p->s + 1e-300) * (rand() / (RAND_MAX + 1.0));
+      // add out/in edges to vertices
+      graph->outEdges[p->src].push_back(p);
+      graph->inEdges[p->dst].push_back(p);
     }
 
     return graph;
   }
 
-  void destroyGraph(Graph* g)
+  void destroyGraph(Graph* graph)
   {
-    for (int i = 0; i < g->n; ++i) {
-      for (size_t j = 0; j < g->outEdges[i].size(); ++j) {
-        delete g->outEdges[i][j];
-      }
-    }
-    delete [] g->outEdges;
-    delete [] g->inEdges;
-    delete g;
+    delete [] graph->outEdges;
+    delete [] graph->inEdges;
+    delete graph;
   }
 
   inline void update(double& variable, double newValue, double damping)
@@ -115,9 +111,9 @@ namespace {
       double max1 = -HUGE_VAL, max2 = -HUGE_VAL;
       double argmax1 = -1;
       for (int k = 0; k < m; ++k) {
-        double v = edges[k]->s + edges[k]->a;
-        if (v > max1) { swap(max1, v); argmax1 = k; }
-        if (v > max2) { max2 = v; }
+        double value = edges[k]->s + edges[k]->a;
+        if (value > max1) { swap(max1, value); argmax1 = k; }
+        if (value > max2) { max2 = value; }
       }
       // update responsibilities
       for (int k = 0; k < m; ++k) {
