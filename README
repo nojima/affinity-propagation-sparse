@@ -1,10 +1,15 @@
-* DESCRIPTION
+=============
+ DESCRIPTION
+=============
 
-This program is an implementation of affinity propagation, a clustering algorithm by passing messages between data points.
-This program is optimized for sparse similarites, where there are O(n) finite similarites and others are negative infinity similarites.
+This program is an implementation of affinity propagation, a clustering
+algorithm by passing messages between data points.
+This program is optimized for sparse similarites, where there are O(n) finite
+similarites and others are negative infinity similarites.
 
-
-* MAKE AND RUN
+==============
+ MAKE AND RUN
+==============
 
 First, prepare a similarity file like:
 
@@ -31,8 +36,9 @@ Then, make and run. (sim.txt is a similarity file mentioned above)
 $ make
 $ ./ap < sim.txt
 
-
-* LICENSE
+=========
+ LICENSE
+=========
 
 The MIT License
 
