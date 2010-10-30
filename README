@@ -1,0 +1,58 @@
+* DESCRIPTION
+
+This program is an implementation of affinity propagation, a clustering algorithm by passing messages between data points.
+This program is optimized for sparse similarites, where there are O(n) finite similarites and others are negative infinity similarites.
+
+
+* MAKE AND RUN
+
+First, prepare a similarity file like:
+
+272
+0 4 -0.866169620986
+8 15 -5.54097758238
+3 221 -0.391640594901
+10 0 -5.89035174724
+77 102 -0.205104158914
+135 248 -1.00319562134
+98 40 -0.992369707296
+68 132 -1.97837136257
+...
+
+Input specification is following:
+First line contains an integer standing for the size of the matrix.
+Following lines each contain two integers and a real number standing for
+the row index i, the column index j and the similarity s(i,j) respectively.
+Note that i and j are 0-origin.
+Input ends with an end-of-file.
+
+Then, make and run. (sim.txt is a similarity file mentioned above)
+
+$ make
+$ ./ap < sim.txt
+
+
+* LICENSE
+
+The MIT License
+
+Copyright (c) 2010 NOJIMA Yusuke
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
