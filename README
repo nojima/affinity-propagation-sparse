@@ -6,6 +6,8 @@ This program is an implementation of affinity propagation, a clustering
 algorithm by passing messages between data points.
 This program is optimized for sparse similarites, where there are O(n) finite
 similarites and others are negative infinity similarites.
+You can find the details about affinity propagation at the following URL:
+http://www.psi.toronto.edu/affinitypropagation/
 
 ==============
  MAKE AND RUN
